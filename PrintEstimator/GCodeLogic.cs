@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,7 +23,8 @@ namespace PrintEstimator
         {
             for (int i = 0; i < parsedFile[i].Count; i++)
             {
-                Enums.Movement parsedFile = (Enums.Movement)parsedFile[i][0];
+                Enums.Movement foo;
+                bool success = Enum.TryParse(parsedFile[i][0], out foo);
             }
 
             long totalTimeInSeconds = 0;
