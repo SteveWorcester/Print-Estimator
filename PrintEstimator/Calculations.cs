@@ -8,6 +8,12 @@ namespace PrintEstimator
 {
     class Calculations
     {
+        public double Acceleration { get; set; }
+        public double XSpeed { get; set; }
+        public double YSpeed { get; set; }
+        public double ZSpeed { get; set; }
+        public double RetractAcceleration { get; set; }
+
         /// <summary>
         /// Returns the time to accelerate from beginning speed to max speed; can also be used for deceleration
         /// </summary>

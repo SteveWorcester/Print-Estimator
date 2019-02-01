@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Calculations.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="GCodeLogic.cs" />
     <Compile Include="GCodeReader.cs" />
     <Compile Include="Program.cs" />
