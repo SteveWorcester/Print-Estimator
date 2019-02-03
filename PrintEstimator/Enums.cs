@@ -25,7 +25,17 @@ namespace PrintEstimator
             M2, // Program End
             M101, // Start Extruder - may not be used?
             M102, // Retract Extruder - may not be used?
-            M103, // Stop Extruders - may not be used?
+            M103 // Stop Extruders - may not be used?
+        }
+        public enum Parameter
+        {
+            X, // X coordinate
+            Y, // Y coordinate
+            Z, // Z coordinate
+            S, // ?
+            C, // Cycles?
+            P, // ?
+            T  // Temp?
         }
 
         //public Movement ConvertToEnum(string command)
