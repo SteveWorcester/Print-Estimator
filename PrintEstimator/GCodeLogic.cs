@@ -14,59 +14,106 @@ namespace PrintEstimator
         {
 
         }
-        
-        public List<KeyValuePair<Enums.Movement, List<string>>> CreateMovementList(List<List<string>> parsedFile)
+        /// <summary>
+        /// Turns a parsed GCode into a usable collection
+        /// </summary>
+        /// <param name="parsedFile"></param>
+        /// <returns></returns>
+        public List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> CreateMovementList(List<List<string>> parsedFile)
         {
-            List<KeyValuePair<Enums.Movement, List<string>>> movementList = new List<KeyValuePair<Enums.Movement, List<string>>>();
+            List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> movementList = new List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>>();
             for (int i = 0; i < parsedFile[i].Count; i++)
             {
+                bool success = false;
                 Enums.Movement enumChanger;
-                bool success = Enum.TryParse(parsedFile[i][0], out enumChanger);
+                success = Enum.TryParse(parsedFile[i][0], out enumChanger);
                 if (success)
                 {
                     parsedFile[i].Remove(parsedFile[i][0]);
-                    movementList.Add(new  KeyValuePair<Enums.Movement, List<string>>(enumChanger, parsedFile[i]));
+                    List<KeyValuePair<Enums.Parameter, double>> parameterEnumList = CreateParameterList(parsedFile[i]);
+                    movementList.Add(new KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>> (enumChanger, parameterEnumList));
                 }
                 else
                 {
                     parsedFile.Remove(parsedFile[i]);
+                    Console.WriteLine($"Removing movement code: {parsedFile[i]}");
                 }
             }
             return movementList;
         }
-        public List<KeyValuePair<Enums.Movement, List<Enums.Parameter>>> CreateParameterList (List<KeyValuePair<Enums.Movement, List<string>>> movementList)
+        private List<KeyValuePair<Enums.Parameter, double>> CreateParameterList (List<string> parameterStringList)
         {
-            List<KeyValuePair<Enums.Movement, List<Enums.Parameter>>> fullMovementAndParameterList = new List<KeyValuePair<Enums.Movement, List<Enums.Parameter>>>();
-            foreach (var item in movementList)
+            List<KeyValuePair<Enums.Parameter, double>> parameterList = new List<KeyValuePair<Enums.Parameter, double>>();
+            for (int i = 0; i < parameterStringList.Count; i++)
             {
-                // dafuq. figure out how to iterate through this shit.....
+                bool firstLetterSuccess = false;
+                string firstLetter = parameterStringList[i][0].ToString();
+                parameterStringList.Remove(firstLetter);
+                Enums.Parameter enumChanger;
+                firstLetterSuccess = Enum.TryParse(firstLetter, out enumChanger);
+
+                bool coordinateSuccess = false;
+                double coordinate;
+                coordinateSuccess = double.TryParse(parameterStringList[i], out coordinate);
+                
+                if (firstLetterSuccess && coordinateSuccess)
+                {
+                    parameterList.Add(new KeyValuePair<Enums.Parameter, double>(enumChanger, coordinate));
+                }
+                else
+                {
+                    parameterStringList.Remove(parameterStringList[i]);
+                    Console.WriteLine($"Removing parameter: {firstLetter}{parameterStringList[i]}");
+                }
             }
-            return 0;
+            return parameterList;
         }
         /// <summary>
         /// Calculates the time of a full GCode file
         /// </summary>
         /// <param name="parsedFile"></param>
         /// <returns></returns>
-        public double CalculateTime(List<List<string>> parsedFile)
+        public string CalculateTime(List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> gCode)
         {
-
-
-            long totalTimeInSeconds = 0;
-            for (int i = 0; i < parsedFile[i].Count; i++)
+            Calculations Calculate = new Calculations();
+            double totalTimeInSeconds = 0;
+            for (int i = 0; i < gCode.Count; i++)
             {
-
-                for (int j = 0; j < parsedFile[i][j].Length; j++)
+                switch (gCode[i].Key)
                 {
-
-                    switch (parsedFile[i][j])
-                    {
-                        //Calculations calculate = new Calculations();
-                        //case Enums.Movement.G0:
-                        //
-                        //    break;
-                    }
+                    case Enums.Movement.G0:
+                        break;
+                    case Enums.Movement.G1:
+                        totalTimeInSeconds += Calculate.AccelerationTime(Calculate.Acceleration, )
+                        break;
+                    case Enums.Movement.G2:
+                        break;
+                    case Enums.Movement.G3:
+                        break;
+                    case Enums.Movement.G10:
+                        break;
+                    case Enums.Movement.G11:
+                        break;
+                    case Enums.Movement.G42:
+                        break;
+                    case Enums.Movement.G92:
+                        break;
+                    case Enums.Movement.M0:
+                        break;
+                    case Enums.Movement.M1:
+                        break;
+                    case Enums.Movement.M2:
+                        break;
+                    case Enums.Movement.M101:
+                        break;
+                    case Enums.Movement.M102:
+                        break;
+                    case Enums.Movement.M103:
+                        break;
+                    default:
+                        break;
                 }
+
             }
             return 0;
         }

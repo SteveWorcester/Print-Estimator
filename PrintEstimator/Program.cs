@@ -34,7 +34,7 @@ namespace PrintEstimator
                 case 'n': 
                     Console.WriteLine("can't change these yet");
                     break;
-
+                case 'y':
                 default:
                     Console.WriteLine("Enter the local filepath of your G Code: ");
                     string filePath = Console.ReadLine();
@@ -42,8 +42,9 @@ namespace PrintEstimator
                     GCodeReader NewFile = new GCodeReader();
                     List<List<string>> parsedFile = NewFile.FileParser(filePath);
 
-                    GCodeLogic PrintTime = new GCodeLogic();
-                    PrintTime.CalculateTime(parsedFile);
+                    GCodeLogic GCode = new GCodeLogic();
+                    var EncodedFile = GCode.CreateMovementList(parsedFile);
+                    GCode.CalculateTime(EncodedFile);
                     break;
             }
         }
