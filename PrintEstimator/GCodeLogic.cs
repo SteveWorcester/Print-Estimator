@@ -14,6 +14,15 @@ namespace PrintEstimator
         {
 
         }
+        public double XCoordinate { get; set; }
+        public double YCoordinate { get; set; }
+        public double ZCoordinate { get; set; }
+        public double LastXCoordinate { get; set; }
+        public double LastYCoordinate { get; set; }
+        public double LastZCoordinate { get; set; }
+        public double FeedRate { get; set; }
+        public double ExtrudeLength { get; set; }
+
         /// <summary>
         /// Turns a parsed GCode into a usable collection
         /// </summary>
@@ -82,9 +91,10 @@ namespace PrintEstimator
                 switch (gCode[i].Key)
                 {
                     case Enums.Movement.G0:
-                        break;
                     case Enums.Movement.G1:
-                        totalTimeInSeconds += Calculate.AccelerationTime(Calculate.Acceleration, )
+                        ParseCoordinates(gCode[i].Value);
+                        double distance = Calculate.CalculateDistanceBetweenPoints(XCoordinate, YCoordinate, ZCoordinate, LastXCoordinate, LastYCoordinate, LastZCoordinate);
+                        totalTimeInSeconds += Calculate.CalculateMaxSpeedTravelTime(FeedRate, distance, ExtrudeLength);
                         break;
                     case Enums.Movement.G2:
                         break;
@@ -97,6 +107,8 @@ namespace PrintEstimator
                     case Enums.Movement.G42:
                         break;
                     case Enums.Movement.G92:
+                        ParseCoordinates(gCode[i].Value);
+
                         break;
                     case Enums.Movement.M0:
                         break;
@@ -117,8 +129,44 @@ namespace PrintEstimator
             }
             return 0;
         }
+
+        private void ParseCoordinates(List<KeyValuePair<Enums.Parameter, double>> parameterList)
+        {
+            if (XCoordinate != null && YCoordinate != null && ZCoordinate != null)
+            {
+                LastXCoordinate = XCoordinate;
+                LastYCoordinate = YCoordinate;
+                LastZCoordinate = ZCoordinate;
+            }
+
+            for (int i = 0; i < parameterList.Count; i++)
+            {
+                switch (parameterList[i].Key)
+                {
+                    case Enums.Parameter.X:
+                        XCoordinate = parameterList[i].Value;
+                        break;
+                    case Enums.Parameter.Y:
+                        YCoordinate = parameterList[i].Value;
+                        break;
+                    case Enums.Parameter.Z:
+                        ZCoordinate = parameterList[i].Value;
+                        break;
+                    case Enums.Parameter.F:
+                        FeedRate = parameterList[i].Value;
+                        break;
+                    case Enums.Parameter.E:
+                        ExtrudeLength = parameterList[i].Value;
+                        break;
+                    default:
+                        parameterList.Remove(parameterList[i]);
+                        break;
+                }
+            }
+        }
     }
-    }
+
+}
 
 
 

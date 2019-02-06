@@ -13,7 +13,29 @@ namespace PrintEstimator
         public double YSpeed { get; set; }
         public double ZSpeed { get; set; }
         public double RetractAcceleration { get; set; }
+        public double FSpeed { get; set; } // max feedrate
 
+        public double CalculateDistanceBetweenPoints(double xCoordinate, double yCoordinate, double zCoordinate, double oldXCoordinate, double oldYCoordinate, double oldZCoordinate)
+        {
+            double zDistance = Math.Abs(zCoordinate - oldZCoordinate);
+            double xDistance = Math.Abs(xCoordinate - oldXCoordinate);
+            double yDistance = Math.Abs(yCoordinate - oldYCoordinate);
+
+            double sqXDistance = xDistance * xDistance;
+            double sqYDistance = yDistance * yDistance;
+            double triHypotenuse = Math.Sqrt(sqXDistance + sqYDistance);
+
+            if (zDistance != 0)
+            {
+                double sqTriHypotenuse = triHypotenuse * triHypotenuse;
+                double sqZDistance = zDistance * zDistance;
+                return Math.Abs(sqTriHypotenuse + sqZDistance);
+            }
+            else
+            {
+                return triHypotenuse;
+            }
+        }
         /// <summary>
         /// Returns the time to accelerate from beginning speed to max speed; can also be used for deceleration
         /// </summary>
@@ -21,7 +43,7 @@ namespace PrintEstimator
         /// <param name="beginningSpeed"></param>
         /// <param name="maxSpeed"></param>
         /// <returns></returns>
-        public double AccelerationTime(double acceleration, double beginningSpeed, double maxSpeed)
+        public double CalculateAccelerationTime(List<KeyValuePair<Enums.Parameter, double>> parameterList)
         {
             var startFromSpeed = maxSpeed - beginningSpeed;
             var time = startFromSpeed / acceleration;
@@ -34,7 +56,7 @@ namespace PrintEstimator
         /// <param name="beginningSpeed"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        public double AccelerationDistance(double acceleration, double beginningSpeed, double maxSpeed)
+        public double CalculateAccelerationDistance(double acceleration, double beginningSpeed, double maxSpeed)
         {
             var time = AccelerationTime(acceleration, beginningSpeed, maxSpeed);
             if (time < 0)
@@ -53,9 +75,11 @@ namespace PrintEstimator
         /// <param name="maxSpeed"></param>
         /// <param name="distanceInMilimeters"></param>
         /// <returns></returns>
-        public double MaxSpeedTravelTime(double maxSpeed, double distanceInMilimeters)
+        public double CalculateMaxSpeedTravelTime(double maxSpeed, double distanceInMillimeters, double extrudeLength)
         {
-            return distanceInMilimeters / maxSpeed;
+            double travelTime = distanceInMillimeters / maxSpeed;
+            double extrudeSpeed = extrudeLength / travelTime;
+            return 0;
         }
     }
 }

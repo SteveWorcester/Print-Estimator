@@ -32,20 +32,12 @@ namespace PrintEstimator
             X, // X coordinate
             Y, // Y coordinate
             Z, // Z coordinate
+            F, // Feedrate - The maximum movement rate between the start and end point. The feedrate set here applies to subsequent moves that omit this parameter.
+            E, // Extrude this amount of filament to get the x,y coordinate
             S, // ?
             C, // Cycles?
             P, // ?
             T  // Temp?
         }
-
-        //public Movement ConvertToEnum(string command)
-        //{
-        //    if (command == "G0")
-        //    {
-        //        
-        //    }
-        //
-        //}
-        
-}
+    }
 }
