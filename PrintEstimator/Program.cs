@@ -29,23 +29,32 @@ namespace PrintEstimator
                               $"Z Speed: {DefaultPrinter.ZSpeed} \n" +
                               $"Are these settings correct? y/n");
             char correctSettings = Console.ReadKey().KeyChar;
-            switch (correctSettings)
+            while (true)
             {
-                case 'n': 
-                    Console.WriteLine("can't change these yet");
-                    break;
-                case 'y':
-                default:
-                    Console.WriteLine("Enter the local filepath of your G Code: ");
-                    string filePath = Console.ReadLine();
+                switch (correctSettings)
+                {
+                    case 'N':
+                    case 'n':
+                        // TODO: Nice to have - Make this auto-found as part of startup; ping printer for speeds/accelerations
+                        Console.WriteLine("can't change these yet");
+                        break;
+                    case 'Y':
+                    case 'y':
+                        Console.WriteLine("Enter the local filepath of your G Code: ");
+                        string filePath = Console.ReadLine();
 
-                    GCodeReader NewFile = new GCodeReader();
-                    List<List<string>> parsedFile = NewFile.FileParser(filePath);
+                        GCodeReader NewFile = new GCodeReader();
+                        List<List<string>> parsedFile = NewFile.FileParser(filePath);
 
-                    GCodeLogic GCode = new GCodeLogic();
-                    var EncodedFile = GCode.CreateMovementList(parsedFile);
-                    GCode.CalculateTime(EncodedFile);
-                    break;
+                        GCodeLogic GCode = new GCodeLogic();
+                        var EncodedFile = GCode.CreateMovementList(parsedFile);
+                        GCode.CalculateTime(EncodedFile);
+                        break;
+                    default:
+                        Console.WriteLine($"Main settings input does not contain a response for {correctSettings}. Please try again.");
+                        break;
+
+                }
             }
         }
     }

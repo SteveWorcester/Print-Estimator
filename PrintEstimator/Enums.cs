@@ -11,7 +11,7 @@ namespace PrintEstimator
     {
         public enum Movement
         {
-            //TODO: Fill Movement; is currently only partial
+            //TODO: Fill Movement; is currently only partial - close to complete?
             G0 = 0, // linear move w/ wait
             G1, // linear move
             G2, // Clockwise arc move
@@ -27,6 +27,7 @@ namespace PrintEstimator
             M102, // Retract Extruder - may not be used?
             M103 // Stop Extruders - may not be used?
         }
+
         public enum Parameter
         {
             X, // X coordinate

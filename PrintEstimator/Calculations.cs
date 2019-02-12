@@ -15,11 +15,12 @@ namespace PrintEstimator
         public double RetractAcceleration { get; set; }
         public double FSpeed { get; set; } // max feedrate
 
-        public double CalculateDistanceBetweenPoints(double xCoordinate, double yCoordinate, double zCoordinate, double oldXCoordinate, double oldYCoordinate, double oldZCoordinate)
+        public double CalculateDistanceBetweenPoints(List<double> coordinatesList)
         {
-            double zDistance = Math.Abs(zCoordinate - oldZCoordinate);
-            double xDistance = Math.Abs(xCoordinate - oldXCoordinate);
-            double yDistance = Math.Abs(yCoordinate - oldYCoordinate);
+            
+            double xDistance = Math.Abs(coordinatesList[0] - coordinatesList[3]); // new X minus last X
+            double yDistance = Math.Abs(coordinatesList[1] - coordinatesList[4]); // new Y minus last Y
+            double zDistance = Math.Abs(coordinatesList[2] - coordinatesList[5]); // new Z minus last Z
 
             double sqXDistance = xDistance * xDistance;
             double sqYDistance = yDistance * yDistance;
@@ -29,7 +30,7 @@ namespace PrintEstimator
             {
                 double sqTriHypotenuse = triHypotenuse * triHypotenuse;
                 double sqZDistance = zDistance * zDistance;
-                return Math.Abs(sqTriHypotenuse + sqZDistance);
+                return Math.Sqrt(Math.Abs(sqTriHypotenuse + sqZDistance)); // this *should* only return z axis moves in practice because the Z axis should move by itself when printing; however, this math is in here in case of special print settings.
             }
             else
             {
@@ -75,11 +76,20 @@ namespace PrintEstimator
         /// <param name="maxSpeed"></param>
         /// <param name="distanceInMilimeters"></param>
         /// <returns></returns>
-        public double CalculateMaxSpeedTravelTime(double maxSpeed, double distanceInMillimeters, double extrudeLength)
+        public double CalculateMaxSpeedTravelTime(double feedRate, double distanceInMillimeters, double extrudeLength)
         {
-            double travelTime = distanceInMillimeters / maxSpeed;
-            double extrudeSpeed = extrudeLength / travelTime;
-            return 0;
+            double accelerationDistance;
+            if (extrudeLength < .01)
+            {
+                accelerationDistance = 0;
+            }
+            else
+            {
+                double travelTime = distanceInMillimeters / feedRate;
+                double extrudeSpeed = extrudeLength / travelTime;
+                return 0;
+            }
+
         }
     }
 }
