@@ -1,2 +1,2 @@
 # Print-Estimator
-Estimates 3D Print Times
+(WIP) Estimates 3D Print Times by parsing a local GCode gcode file at the given location.
