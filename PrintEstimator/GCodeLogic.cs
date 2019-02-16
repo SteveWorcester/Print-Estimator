@@ -31,7 +31,7 @@ namespace PrintEstimator
         /// </summary>
         /// <param name="parsedFile"></param>
         /// <returns></returns>
-        public List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> CreateMovementList(List<List<string>> parsedFile)
+        public List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> CreateMovementList(Calculations defaultPrinter, List<List<string>> parsedFile)
         {
             List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> movementList = new List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>>();
             for (int i = 0; i < parsedFile[i].Count; i++)
@@ -87,13 +87,12 @@ namespace PrintEstimator
         /// </summary>
         /// <param name="parsedFile"></param>
         /// <returns></returns>
-        public long CalculateTime(List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> gCode)
+        public double CalculateTime(Calculations defaultPrinter, List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> gCode)
         {
-            
-            Calculations Calculate = new Calculations();
             double totalTimeInSeconds = 0;
             for (int i = 0; i < gCode.Count; i++)
             {
+                ParseCoordinates(gCode[i].Value);
                 List<double> coordinatesList = new List<double>() { XCoordinate, YCoordinate, ZCoordinate,
                     LastXCoordinate, LastYCoordinate, LastZCoordinate };
 
@@ -102,8 +101,7 @@ namespace PrintEstimator
                     case Enums.Movement.G0:
                     case Enums.Movement.G1:
                         ParseCoordinates(gCode[i].Value);
-                        double distance = Calculate.CalculateDistanceBetweenPoints(coordinatesList);
-                        totalTimeInSeconds += Calculate.CalculateMaxSpeedTravelTime(FeedRate, distance, ExtrudeLength);
+                        totalTimeInSeconds += defaultPrinter.CalculateLineTime(coordinatesList, ExtrudeLength);
                         break;
                     case Enums.Movement.G2:
                         break;
@@ -135,7 +133,8 @@ namespace PrintEstimator
                 }
 
             }
-            return 0;
+            Math.Round(totalTimeInSeconds);
+            return totalTimeInSeconds;
         }
 
         private void ParseCoordinates(List<KeyValuePair<Enums.Parameter, double>> parameterList)

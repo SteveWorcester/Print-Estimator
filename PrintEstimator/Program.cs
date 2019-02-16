@@ -47,13 +47,19 @@ namespace PrintEstimator
                         List<List<string>> parsedFile = NewFile.FileParser(filePath);
 
                         GCodeLogic GCode = new GCodeLogic();
-                        var EncodedFile = GCode.CreateMovementList(parsedFile);
-                        GCode.CalculateTime(EncodedFile);
+                        var EncodedFile = GCode.CreateMovementList(DefaultPrinter, parsedFile);
+                        var totalTimeInSeconds = GCode.CalculateTime(DefaultPrinter, EncodedFile);
+                        var totalTimeInMinutes = totalTimeInSeconds / 60;
+                        var totalTimeInHours = totalTimeInMinutes / 60;
+                        var totalTimeInDays = totalTimeInHours / 24;
+                        Console.WriteLine($"Total in Seconds: {totalTimeInSeconds}");
+                        Console.WriteLine($"Total in Minutes: {totalTimeInMinutes}");
+                        Console.WriteLine($"Total in Hours:   {totalTimeInHours}");
+                        Console.WriteLine($"Total in Days:    {totalTimeInDays}");
                         break;
                     default:
                         Console.WriteLine($"Main settings input does not contain a response for {correctSettings}. Please try again.");
                         break;
-
                 }
             }
         }
