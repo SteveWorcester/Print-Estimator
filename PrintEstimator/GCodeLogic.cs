@@ -31,19 +31,19 @@ namespace PrintEstimator
         /// </summary>
         /// <param name="parsedFile"></param>
         /// <returns></returns>
-        public List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> CreateMovementList(Calculations defaultPrinter, List<List<string>> parsedFile)
+        public List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> CreateMovementList(List<List<string>> parsedFile)
         {
             List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> movementList = new List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>>();
             for (int i = 0; i < parsedFile[i].Count; i++)
             {
                 bool success = false;
                 Enums.Movement enumChanger;
-                success = Enum.TryParse(parsedFile[i][0], out enumChanger);
+                success = Enum.TryParse(parsedFile[i][0], out enumChanger); 
                 if (success)
-                {
-                    parsedFile[i].Remove(parsedFile[i][0]);
+                {                 
                     List<KeyValuePair<Enums.Parameter, double>> parameterEnumList = CreateParameterList(parsedFile[i]);
                     movementList.Add(new KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>> (enumChanger, parameterEnumList));
+                    parsedFile[i].Remove(parsedFile[i][0]);
                 }
                 else
                 {
@@ -60,23 +60,24 @@ namespace PrintEstimator
             for (int i = 0; i < parameterStringList.Count; i++)
             {
                 bool firstLetterSuccess = false;
-                string firstLetter = parameterStringList[i][0].ToString();
-                parameterStringList.Remove(firstLetter);
+                char firstLetter = parameterStringList[i][0];
+                parameterStringList[i].Remove(0, 1);
                 Enums.Parameter enumChanger;
-                firstLetterSuccess = Enum.TryParse(firstLetter, out enumChanger);
+                firstLetterSuccess = Enum.TryParse(firstLetter.ToString(), out enumChanger);
+
+
 
                 bool coordinateSuccess = false;
                 double coordinate;
-                coordinateSuccess = double.TryParse(parameterStringList[i], out coordinate);
-                
+                coordinateSuccess = double.TryParse(parameterStringList[i].ToString(), out coordinate);
+
                 if (firstLetterSuccess && coordinateSuccess)
                 {
                     parameterList.Add(new KeyValuePair<Enums.Parameter, double>(enumChanger, coordinate));
                 }
                 else
                 {
-                    parameterStringList.Remove(parameterStringList[i]);
-                    Console.WriteLine($"Removing parameter: {firstLetter}{parameterStringList[i]}");
+                    Console.WriteLine($"Removing parameter: {firstLetter} in GCodeLogic.CreateParameterList.parameterStringList in line {i}");
                 }
             }
             return parameterList;

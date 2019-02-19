@@ -26,41 +26,26 @@ namespace PrintEstimator
                               $"Retract Acceleration: {DefaultPrinter.RetractAcceleration} \n" +
                               $"X Speed: {DefaultPrinter.XSpeed} \n" +
                               $"Y Speed: {DefaultPrinter.YSpeed} \n" +
-                              $"Z Speed: {DefaultPrinter.ZSpeed} \n" +
-                              $"Are these settings correct? y/n");
-            char correctSettings = Console.ReadKey().KeyChar;
+                              $"Z Speed: {DefaultPrinter.ZSpeed} \n");
             while (true)
             {
-                switch (correctSettings)
-                {
-                    case 'N':
-                    case 'n':
-                        // TODO: Nice to have - Make this auto-found as part of startup; ping printer for speeds/accelerations
-                        Console.WriteLine("can't change these yet");
-                        break;
-                    case 'Y':
-                    case 'y':
-                        Console.WriteLine("Enter the local filepath of your G Code: ");
-                        string filePath = Console.ReadLine();
+                Console.WriteLine("Enter the local filepath of your G Code: ");
+                string filePath = Console.ReadLine();
 
-                        GCodeReader NewFile = new GCodeReader();
-                        List<List<string>> parsedFile = NewFile.FileParser(filePath);
+                GCodeReader NewFile = new GCodeReader();
+                List<List<string>> parsedFile = NewFile.FileParser(filePath);
 
-                        GCodeLogic GCode = new GCodeLogic();
-                        var EncodedFile = GCode.CreateMovementList(DefaultPrinter, parsedFile);
-                        var totalTimeInSeconds = GCode.CalculateTime(DefaultPrinter, EncodedFile);
-                        var totalTimeInMinutes = totalTimeInSeconds / 60;
-                        var totalTimeInHours = totalTimeInMinutes / 60;
-                        var totalTimeInDays = totalTimeInHours / 24;
-                        Console.WriteLine($"Total in Seconds: {totalTimeInSeconds}");
-                        Console.WriteLine($"Total in Minutes: {totalTimeInMinutes}");
-                        Console.WriteLine($"Total in Hours:   {totalTimeInHours}");
-                        Console.WriteLine($"Total in Days:    {totalTimeInDays}");
-                        break;
-                    default:
-                        Console.WriteLine($"Main settings input does not contain a response for {correctSettings}. Please try again.");
-                        break;
-                }
+                GCodeLogic GCode = new GCodeLogic();
+                var EncodedFile = GCode.CreateMovementList(parsedFile);
+                var totalTimeInSeconds = GCode.CalculateTime(DefaultPrinter, EncodedFile);
+                var totalTimeInMinutes = totalTimeInSeconds / 60;
+                var totalTimeInHours = totalTimeInMinutes / 60;
+                var totalTimeInDays = totalTimeInHours / 24;
+                Console.WriteLine($"Total in Seconds: {totalTimeInSeconds}");
+                Console.WriteLine($"Total in Minutes: {totalTimeInMinutes}");
+                Console.WriteLine($"Total in Hours:   {totalTimeInHours}");
+                Console.WriteLine($"Total in Days:    {totalTimeInDays}");
+
             }
         }
     }
