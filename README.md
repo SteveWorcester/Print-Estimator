@@ -1,2 +1,5 @@
 # Print-Estimator
-(WIP) Estimates 3D Print Times by parsing a local GCode gcode file at the given location.
+Estimates 3D Print Times of a local GCode gcode file at the given location.
+
+1. Launch print-Estimator.
+2. Enter the full filepath of the file.gcode that you would like time to be estimated.
