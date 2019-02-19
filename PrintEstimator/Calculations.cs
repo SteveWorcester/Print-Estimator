@@ -62,7 +62,7 @@ namespace PrintEstimator
             double MaxSpeedTravelTime = CalculateMaxSpeedTravelTime(XSpeed, accelerationDistance, distance);
 
 
-            return 0;
+            return MaxSpeedTravelTime;
         }
 
         private double CalculateDistanceBetweenPoints(List<double> coordinatesList)

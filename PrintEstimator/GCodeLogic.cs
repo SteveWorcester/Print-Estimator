@@ -34,21 +34,24 @@ namespace PrintEstimator
         public List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> CreateMovementList(List<List<string>> parsedFile)
         {
             List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>> movementList = new List<KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>>();
-            for (int i = 0; i < parsedFile[i].Count; i++)
+            for (int i = 0; i < parsedFile.Count; i++)
             {
-                bool success = false;
-                Enums.Movement enumChanger;
-                success = Enum.TryParse(parsedFile[i][0], out enumChanger); 
-                if (success)
-                {                 
-                    List<KeyValuePair<Enums.Parameter, double>> parameterEnumList = CreateParameterList(parsedFile[i]);
-                    movementList.Add(new KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>> (enumChanger, parameterEnumList));
-                    parsedFile[i].Remove(parsedFile[i][0]);
-                }
-                else
+                for (int j = 0; j < parsedFile[i].Count; j++)
                 {
-                    parsedFile.Remove(parsedFile[i]);
-                    Console.WriteLine($"Removing movement code: {parsedFile[i]}");
+                    bool success = false;
+                    Enums.Movement enumChanger;
+                    success = Enum.TryParse(parsedFile[i][0], out enumChanger);
+                    if (success)
+                    {
+                        List<KeyValuePair<Enums.Parameter, double>> parameterEnumList = CreateParameterList(parsedFile[i]);
+                        movementList.Add(new KeyValuePair<Enums.Movement, List<KeyValuePair<Enums.Parameter, double>>>(enumChanger, parameterEnumList));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Movement code: {parsedFile[i][j]} unused" +
+                            $" - this should not be G1" +
+                            $" (GCodeLogic.CreateMovementList)");
+                    }
                 }
             }
             return movementList;
@@ -57,28 +60,33 @@ namespace PrintEstimator
         private List<KeyValuePair<Enums.Parameter, double>> CreateParameterList (List<string> parameterStringList)
         {
             List<KeyValuePair<Enums.Parameter, double>> parameterList = new List<KeyValuePair<Enums.Parameter, double>>();
-            for (int i = 0; i < parameterStringList.Count; i++)
+            for (int i = 1; i < parameterStringList.Count; i++) // 1 because the first string is the movement command, not the parameter
             {
-                bool firstLetterSuccess = false;
-                char firstLetter = parameterStringList[i][0];
-                parameterStringList[i].Remove(0, 1);
-                Enums.Parameter enumChanger;
-                firstLetterSuccess = Enum.TryParse(firstLetter.ToString(), out enumChanger);
-
-
-
-                bool coordinateSuccess = false;
-                double coordinate;
-                coordinateSuccess = double.TryParse(parameterStringList[i].ToString(), out coordinate);
-
-                if (firstLetterSuccess && coordinateSuccess)
+                if (parameterStringList[i].Equals(""))
                 {
-                    parameterList.Add(new KeyValuePair<Enums.Parameter, double>(enumChanger, coordinate));
+                    // NOP
                 }
                 else
                 {
-                    Console.WriteLine($"Removing parameter: {firstLetter} in GCodeLogic.CreateParameterList.parameterStringList in line {i}");
+                    bool firstLetterSuccess = false;
+                    char firstLetter = parameterStringList[i][0];
+                    string coordinateString = parameterStringList[i].Remove(0, 1);
+                    Enums.Parameter enumChanger;
+                    firstLetterSuccess = Enum.TryParse(firstLetter.ToString(), out enumChanger);
+
+                    double coordinate;
+                    bool coordinateSuccess = false;
+                    coordinateSuccess = double.TryParse(coordinateString, out coordinate);
+                    if (firstLetterSuccess && coordinateSuccess)
+                    {
+                        parameterList.Add(new KeyValuePair<Enums.Parameter, double>(enumChanger, coordinate));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Working on it...");
+                    }
                 }
+
             }
             return parameterList;
         }
@@ -157,7 +165,7 @@ namespace PrintEstimator
                         ZCoordinate = parameterList[i].Value;
                         break;
                     case Enums.Parameter.F:
-                        double tempSqrtHolder = Math.Sqrt(parameterList[i].Value) * 60; // GCode measures feedrate in mm/min^2; *60 turns it into mm/x^s
+                        double tempSqrtHolder = Math.Sqrt(parameterList[i].Value) / 60; // GCode measures feedrate in mm/min^2; /60 turns it into mm/s^s
                         FeedRateInMmPerSecond = tempSqrtHolder * tempSqrtHolder;
                         break;
                     case Enums.Parameter.E:
