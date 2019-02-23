@@ -21,7 +21,7 @@ namespace PrintEstimator
         public double LastYCoordinate { get; set; }
         public double LastZCoordinate { get; set; }
 
-        public double FeedRateInMmPerSecond { get; set; } // must be in millimeters per second squared format; GCode comes out as millimeters per minute squared
+        public double FeedRateInMmPerSecond { get; set; } // must be in millimeters per second squared format
         public double ExtrudeLength { get; set; }
         public double LastExtrudeLength { get; set; }
         public double TotalExtrudeLength { get; set; }
@@ -48,9 +48,7 @@ namespace PrintEstimator
                     }
                     else
                     {
-                        Console.WriteLine($"Movement code: {parsedFile[i][j]} unused" +
-                            $" - this should not be G1" +
-                            $" (GCodeLogic.CreateMovementList)");
+                        Console.WriteLine($"Working on it...");
                     }
                 }
             }
@@ -86,7 +84,6 @@ namespace PrintEstimator
                         Console.WriteLine($"Working on it...");
                     }
                 }
-
             }
             return parameterList;
         }
@@ -107,35 +104,12 @@ namespace PrintEstimator
 
                 switch (gCode[i].Key)
                 {
-                    case Enums.Movement.G0:
                     case Enums.Movement.G1:
                         ParseCoordinates(gCode[i].Value);
                         totalTimeInSeconds += defaultPrinter.CalculateLineTime(coordinatesList, ExtrudeLength);
                         break;
-                    case Enums.Movement.G2:
-                        break;
-                    case Enums.Movement.G3:
-                        break;
-                    case Enums.Movement.G10:
-                        break;
-                    case Enums.Movement.G11:
-                        break;
-                    case Enums.Movement.G42:
-                        break;
-                    case Enums.Movement.G92:
-                        ParseCoordinates(gCode[i].Value); // this is for setting position, not for direct movement; only ParseCoordinates is needed
-                        break;
-                    case Enums.Movement.M0:
-                        break;
-                    case Enums.Movement.M1:
-                        break;
-                    case Enums.Movement.M2:
-                        break;
-                    case Enums.Movement.M101:
-                        break;
-                    case Enums.Movement.M102:
-                        break;
-                    case Enums.Movement.M103:
+                    case Enums.Movement.G92: // this is for setting relative position, not for direct movement; only ParseCoordinates is needed.
+                        ParseCoordinates(gCode[i].Value); 
                         break;
                     default:
                         break;
@@ -165,7 +139,7 @@ namespace PrintEstimator
                         ZCoordinate = parameterList[i].Value;
                         break;
                     case Enums.Parameter.F:
-                        double tempSqrtHolder = Math.Sqrt(parameterList[i].Value) / 60; // GCode measures feedrate in mm/min^2; /60 turns it into mm/s^s
+                        double tempSqrtHolder = Math.Sqrt(parameterList[i].Value) / 60; // GCode measures feedrate in mm/min^2; /60 to turn it into mm/s^2 to match standard print formatting
                         FeedRateInMmPerSecond = tempSqrtHolder * tempSqrtHolder;
                         break;
                     case Enums.Parameter.E:
@@ -187,7 +161,6 @@ namespace PrintEstimator
             }
         }
     }
-
 }
 
 

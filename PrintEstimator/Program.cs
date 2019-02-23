@@ -10,9 +10,7 @@ namespace PrintEstimator
     class Program
     {
         static void Main(string[] args)
-        {
-            // Remove Defaults once speeds and accelerations can be modified  or set automatically in-program
-
+        {            
             #region Default speeds and accelerations
             Calculations DefaultPrinter = new Calculations();
             DefaultPrinter.Acceleration = 250; // mm/sec squared
@@ -45,7 +43,6 @@ namespace PrintEstimator
                 Console.WriteLine($"Total in Minutes: {totalTimeInMinutes}");
                 Console.WriteLine($"Total in Hours:   {totalTimeInHours}");
                 Console.WriteLine($"Total in Days:    {totalTimeInDays}");
-
             }
         }
     }

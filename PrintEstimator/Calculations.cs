@@ -31,12 +31,12 @@ namespace PrintEstimator
             // estimator: the shorter the distance, the more likely the hotend will not be at full stop (curves). 
             // the longer the distance, the more likely this is building a full layer with straight lines.
             double accelerationDistance;
-            if (extrudeLength < .01 && extrudeLength > 0)
+            if (extrudeLength < .001 && extrudeLength > 0)
             {
                 accelerationDistance = CalculateAccelerationDistance(Acceleration, XSpeed, XSpeed);
                 totalLineTime += CalculateAccelerationTime(Acceleration, XSpeed, XSpeed);
             }
-            else if (extrudeLength < .05 && extrudeLength > 0)
+            else if (extrudeLength < .005 && extrudeLength > 0)
             {
                 accelerationDistance = CalculateAccelerationDistance(Acceleration, XSpeed/2, XSpeed);
                 totalLineTime += CalculateAccelerationTime(Acceleration, XSpeed/2, XSpeed);

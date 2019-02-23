@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,27 +9,39 @@ namespace PrintEstimator
 {
     class GCodeReader
     {
-        //TODO: add error checking here
         public List<List<string>> FileParser(string fileLocation)
         {
-            string fullGCodeFile = System.IO.File.ReadAllText(fileLocation);
-            List<string> lineSplit = fullGCodeFile.Split('\n', '\r').ToList();
-            for (int i = 0; i < lineSplit.Count; i++)
+            if (fileLocation.Length > 0 && File.Exists(fileLocation))
             {
-                string line = lineSplit[i];
-                int index = line.IndexOf(";");
-                if (index > 0)
+                string path = fileLocation;
+                using (StreamReader sr = new StreamReader(path))
                 {
-                    line = line.Substring(0, index);
+                    string fullGCodeFile = System.IO.File.ReadAllText(fileLocation);
+                    List<string> lineSplit = fullGCodeFile.Split('\n', '\r').ToList();
+                    for (int i = 0; i < lineSplit.Count; i++)
+                    {
+                        string line = lineSplit[i];
+                        int index = line.IndexOf(";");
+                        if (index > 0)
+                        {
+                            line = line.Substring(0, index);
+                        }
+                    }
+                    List<List<string>> fullParse = new List<List<string>>();
+                    foreach (var line in lineSplit)
+                    {
+                        List<string> parsedLine = line.Split(' ').ToList();
+                        fullParse.Add(parsedLine);
+                    }
+                    return fullParse;
                 }
             }
-            List<List<string>> fullParse = new List<List<string>>();
-            foreach (var line in lineSplit)
+            else
             {
-                List<string> parsedLine = line.Split(' ').ToList();
-                fullParse.Add(parsedLine);                
+                Console.WriteLine("File not found. Please try again: ");
             }
-            return fullParse;
+            string tryAgain = Console.ReadLine();
+            return FileParser(tryAgain);
         }
     }
 }
